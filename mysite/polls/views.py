@@ -2,11 +2,13 @@ from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse
+from django.views import generic
 
 from .models import Question, Choice
 
 # Create your views here.
 
+"""About index"""
 
 """def index(request):
     latest_question_list = Question.objects.order_by('-pub_date')[:5]
@@ -22,6 +24,17 @@ def index(request):
     context = {'latest_question_list': latest_question_list}
     return render(request, 'polls/index.html', context)
 
+
+"""class IndexView(generic.ListView):
+    template_name = "polls/index.html"
+    context_object_name = "latest_question_list"
+
+    def get_queryset(self):
+       # Return the last five published question.
+        return Question.objects.order_by('-pub_date')[:5]
+"""
+
+"""About detail"""
 
 """def detail(request, question_id):
     return HttpResponse("You're looking at the result of question %s." % question_id)"""
@@ -39,10 +52,27 @@ def detail(request, question_id):
     return render(request, "polls/detail.html", {"question": question})
 
 
-def result(request, question_id):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % question_id)
+"""class DetailView(generic.ListView):
+    model = Question
+    template_name = 'polls/detail.html'"""
 
+"""About results"""
+
+"""def results(request, question_id):
+    response = "You're looking at the results of question %s."
+    return HttpResponse(response % question_id)"""
+
+
+def results(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, 'polls/results.html', {"question": question})
+
+
+""""class ResultsView(generic.DetailView):
+    model = Question
+    template_name = 'polls/result.html'"""
+
+"""About vote"""
 
 """def vote(request, question_id):
     return HttpResponse("You're voting on question %s." % question_id)"""
@@ -62,4 +92,4 @@ def vote(request, question_id):
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a user
         # hits the Back button.
-        return HttpResponseRedirect(reverse('poll:results', args=(question_id)))
+        return HttpResponseRedirect(reverse('polls:results', args=question_id))
